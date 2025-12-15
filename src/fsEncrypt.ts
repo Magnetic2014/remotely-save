@@ -326,7 +326,7 @@ export class FakeFsEncrypt extends FakeFs {
       const contentEnc = await this._encryptContent(content);
       const innerEntity = await this.innerFs.writeFile(
         keyEnc,
-        contentEnc,
+        contentEnc as ArrayBuffer,
         mtime,
         ctime
       );

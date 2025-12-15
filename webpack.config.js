@@ -63,6 +63,20 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.m?js$/,
+        resolve:  {
+          fullySpecified:  false,
+        },
+      },
+      {
+        test: /node_modules[\/\\]clean-stack[\/\\]index\.js$/,
+        loader: 'string-replace-loader',
+        options: {
+          search:  "from 'node:url'",
+          replace: "from 'url'",
+        },
+      },
+      {
         test: /\.worker\.ts$/,
         loader: "worker-loader",
         options: {
