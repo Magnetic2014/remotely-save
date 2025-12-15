@@ -1,11 +1,10 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: BuildCI
 
 on:
+  # 监听所有推送到任意分支的事件
   push:
     branches: ["**"]
+  # 监听针对 master 分支的 Pull Request 事件
   pull_request:
     branches: [master]
 
@@ -33,17 +32,23 @@ jobs:
       KOOFR_CLIENT_SECRET: ${{secrets.KOOFR_CLIENT_SECRET}}
 
     strategy:
+      # 使用 Node.js 20.x 的版本进行测试和构建
       matrix:
         node-version: [20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+      # 1. 检出代码
       - name: Checkout codes
         uses: actions/checkout@v4
         with:
+          # 支持递归检出子模块
           submodules: recursive
+
+      # 2. 生成 Git LFS 文件的缓存键
       - name: Checkout LFS file list
         run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
+
+      # 3. 缓存 Git LFS 文件
       - name: LFS Cache
         uses: actions/cache@v4
         with:
@@ -51,16 +56,43 @@ jobs:
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
           restore-keys: |
             ${{ runner.os }}-lfs-
+
+      # 4. 拉取 Git LFS 文件
       - name: Git LFS Pull
         run: git lfs pull
+
+      # 5. 安装指定版本的 Node.js
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm test
-      - run: npm run build
-      - uses: actions/upload-artifact@v4
+
+      # 6. 缓存 NPM 依赖
+      - name: Setup NPM Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+
+      # 7. 安装依赖和必要的 Polyfill 插件
+      - name: Install Dependencies
+        run: |
+          npm ci
+          npm install --save-dev node-polyfill-webpack-plugin crypto-browserify path-browserify process stream-browserify
+
+      # 8. 运行测试套件
+      - name: Run Tests
+        run: npm test
+
+      # 9. 执行构建任务
+      - name: Build Project
+        run: npm run build
+
+      # 10. 上传构建产物
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
         with:
           name: my-dist
           path: |
