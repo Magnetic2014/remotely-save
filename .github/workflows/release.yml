@@ -1,3 +1,5 @@
+# .github/workflows/release.yml
+
 name: Release A New Version
 
 on:
@@ -65,7 +67,7 @@ jobs:
       - name: Install Dependencies
         run: |
           npm ci
-          npm install --save-dev node-polyfill-webpack-plugin @types/node-diff3
+          npm install --save-dev node-polyfill-webpack-plugin crypto-browserify path-browserify process stream-browserify
 
       - name: Run Tests
         run: npm test
