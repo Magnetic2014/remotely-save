@@ -80,7 +80,8 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install
-          npm install --save-dev string-replace-loader node-diff3 node-polyfill-webpack-plugin crypto-browserify path-browserify process stream-browserify
+          npm install node-diff3
+          npm install --save-dev node-polyfill-webpack-plugin crypto-browserify path-browserify process stream-browserify string-replace-loader
 
       # 8. 运行测试套件
       - name: Run Tests

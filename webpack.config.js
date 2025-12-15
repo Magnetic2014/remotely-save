@@ -103,6 +103,9 @@ module.exports = {
   resolve:  {
     extensions: [".tsx", ".ts", ".js"],
     mainFields: ["browser", "module", "main"],
+    alias:  {
+      "clean-stack": false,  // 禁用 clean-stack 模块
+    },
     fallback: {
       crypto: require.resolve("crypto-browserify"),
       fs: false,
