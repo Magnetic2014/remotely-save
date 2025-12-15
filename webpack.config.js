@@ -2,6 +2,7 @@ require("dotenv").config();
 const path = require("path");
 const webpack = require("webpack");
 const TerserPlugin = require("terser-webpack-plugin");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin"); // 新增
 
 const DEFAULT_DROPBOX_APP_KEY = process.env.DROPBOX_APP_KEY || "";
 const DEFAULT_ONEDRIVE_CLIENT_ID = process.env.ONEDRIVE_CLIENT_ID || "";
@@ -47,24 +48,17 @@ module.exports = {
       "global.DEFAULT_KOOFR_CLIENT_ID": `"${DEFAULT_KOOFR_CLIENT_ID}"`,
       "global.DEFAULT_KOOFR_CLIENT_SECRET": `"${DEFAULT_KOOFR_CLIENT_SECRET}"`,
 
-      "process.env.NODE_DEBUG": `undefined`, // ugly fix
-      "process.env.DEBUG": `undefined`, // ugly fix
-      // "process.version": `"v20.10.0"`, // who's using this?
-      // "process":`undefined`,
-      // "global.process":`undefined`,
-
-      // make azure blob storage happy
-      // https://github.com/Azure/azure-sdk-for-js/blob/main/sdk/core/core-util/src/checkEnvironment.ts
+      "process.env.NODE_DEBUG": `undefined`,
+      "process.env.DEBUG": `undefined`,
       "globalThis.process.versions": `undefined`,
     }),
-    // Work around for Buffer is undefined:
-    // https://github.com/webpack/changelog-v5/issues/10
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
     new webpack.ProvidePlugin({
       process: "process/browser",
     }),
+    new NodePolyfillPlugin(), // 新增：引入 Node.js Polyfill 插件
   ],
   module: {
     rules: [
@@ -87,7 +81,7 @@ module.exports = {
       {
         test: /\.m?js$/,
         resolve: {
-          fullySpecified: false, // process/browser returns some errors before
+          fullySpecified: false,
         },
       },
     ],
@@ -96,36 +90,17 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
     mainFields: ["browser", "module", "main"],
     fallback: {
-      // assert: require.resolve("assert"),
-      // buffer: require.resolve("buffer/"),
-      // console: require.resolve("console-browserify"),
-      // constants: require.resolve("constants-browserify"),
       crypto: require.resolve("crypto-browserify"),
-      // crypto: false,
-      // domain: require.resolve("domain-browser"),
-      // events: require.resolve("events"),
       fs: false,
-      http: false,
-      // http: require.resolve("stream-http"),
-      https: false,
-      // https: require.resolve("https-browserify"),
-      net: false,
-      // os: require.resolve("os-browserify/browser"),
       path: require.resolve("path-browserify"),
-      // punycode: require.resolve("punycode"),
       process: require.resolve("process/browser"),
-      // querystring: require.resolve("querystring-es3"),
       stream: require.resolve("stream-browserify"),
-      // string_decoder: require.resolve("string_decoder"),
-      // sys: require.resolve("util"),
-      // timers: require.resolve("timers-browserify"),
-      tls: false,
-      // tty: require.resolve("tty-browserify"),
-      url: require.resolve("url/"),
-      // util: require.resolve("util"),
-      // vm: require.resolve("vm-browserify"),
+      url: require.resolve("url/"), // 确保 url 模块可用
       vm: false,
-      // zlib: require.resolve("browserify-zlib"),
+      tls: false,
+      http: false,
+      https: false,
+      net: false,
     },
   },
   externals: {
