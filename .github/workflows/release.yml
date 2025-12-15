@@ -1,11 +1,3 @@
-# modified from https://github.com/argenos/nldates-obsidian/blob/master/.github/workflows/release.yml
-# which is released under MIT License
-
-# trigger:
-# modify manifest.json, package.json, versions.json
-# git tag <version number>
-# git push origin --tags
-
 name: Release A New Version
 
 on:
@@ -45,8 +37,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Checkout LFS file list
-        run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
+
       - name: LFS Cache
         uses: actions/cache@v4
         with:
@@ -54,15 +45,34 @@ jobs:
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
           restore-keys: |
             ${{ runner.os }}-lfs-
+
       - name: Git LFS Pull
         run: git lfs pull
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm install
-      - run: npm test
-      - run: npm run build
+
+      - name: Setup NPM Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ matrix.node-version }}-
+
+      - name: Install Dependencies
+        run: |
+          npm ci
+          npm install --save-dev node-polyfill-webpack-plugin @types/node-diff3
+
+      - name: Run Tests
+        run: npm test
+
+      - name: Build Project
+        run: npm run build
+
       - name: Create Release And Upload
         uses: softprops/action-gh-release@v2
         with:
