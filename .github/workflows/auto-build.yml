@@ -79,7 +79,7 @@ jobs:
       # 7. 安装依赖和必要的 Polyfill 插件
       - name: Install Dependencies
         run: |
-          npm ci
+          npm install
           npm install --save-dev node-polyfill-webpack-plugin crypto-browserify path-browserify process stream-browserify
 
       # 8. 运行测试套件
