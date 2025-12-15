@@ -183,13 +183,11 @@ const stripLeadingPath = (x: string) => {
 const getNormPath = (fileOrFolderPath: string, remoteBaseDir: string) => {
   const strippedFileOrFolderPath = stripLeadingPath(fileOrFolderPath);
 
-  // 在整个路径中查找 remoteBaseDir 的位置
   const idx = strippedFileOrFolderPath.indexOf(`/${remoteBaseDir}`);
   if (idx === -1) {
     throw Error(`"${fileOrFolderPath}" after stripping doesn't contain "/${remoteBaseDir}"`);
   }
 
-  // 保证返回是从 remoteBaseDir 部分开始的
   const startingFromBaseDir = strippedFileOrFolderPath.slice(idx + 1); // 去掉第一个 "/"
   return startingFromBaseDir;
 };
