@@ -103,6 +103,9 @@ module.exports = {
       net: false,
     },
   },
+  resolve.fallback: {
+    "node:url": require.resolve("url/"),
+  },
   externals: {
     obsidian: "commonjs2 obsidian",
   },
