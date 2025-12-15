@@ -4,17 +4,33 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
-    "target": "es6",
+    "target": "ES2020",
     "strict": true,
     "allowJs": true,
     "noImplicitAny": true,
     "moduleResolution": "node",
-    // "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": ["dom", "es5", "scripthost", "es2015", "webworker"]
+    "lib": [
+      "dom",
+      "es2020",
+      "es2015", 
+      "scripthost",
+      "webworker"
+    ],
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true
   },
-  "include": ["src/global.d.ts", "**/*.ts"]
+  "include": [
+    "src/global.d.ts", 
+    "**/*.ts"
+  ],
+  "exclude": [
+    "node_modules", 
+    "dist"
+  ]
 }
