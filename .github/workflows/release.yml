@@ -1,5 +1,3 @@
-# .github/workflows/release.yml
-
 name: Release A New Version
 
 on:
@@ -17,21 +15,21 @@ jobs:
       DROPBOX_APP_KEY: ${{secrets.DROPBOX_APP_KEY}}
       ONEDRIVE_CLIENT_ID: ${{secrets.ONEDRIVE_CLIENT_ID}}
       ONEDRIVE_AUTHORITY: ${{secrets.ONEDRIVE_AUTHORITY}}
-      REMOTELYSAVE_WEBSITE: ${{secrets.REMOTELYSAVE_WEBSITE}}
+      REMOTELYSAVE_WEBSITE: ${{secrets. REMOTELYSAVE_WEBSITE}}
       REMOTELYSAVE_CLIENT_ID: ${{secrets.REMOTELYSAVE_CLIENT_ID}}
       GOOGLEDRIVE_CLIENT_ID: ${{secrets.GOOGLEDRIVE_CLIENT_ID}}
       GOOGLEDRIVE_CLIENT_SECRET: ${{secrets.GOOGLEDRIVE_CLIENT_SECRET}}
-      BOX_CLIENT_ID: ${{secrets.BOX_CLIENT_ID}}
-      BOX_CLIENT_SECRET: ${{secrets.BOX_CLIENT_SECRET}}
+      BOX_CLIENT_ID: ${{secrets. BOX_CLIENT_ID}}
+      BOX_CLIENT_SECRET:  ${{secrets.BOX_CLIENT_SECRET}}
       PCLOUD_CLIENT_ID: ${{secrets.PCLOUD_CLIENT_ID}}
-      PCLOUD_CLIENT_SECRET: ${{secrets.PCLOUD_CLIENT_SECRET}}
-      YANDEXDISK_CLIENT_ID: ${{secrets.YANDEXDISK_CLIENT_ID}}
-      YANDEXDISK_CLIENT_SECRET: ${{secrets.YANDEXDISK_CLIENT_SECRET}}
+      PCLOUD_CLIENT_SECRET: ${{secrets. PCLOUD_CLIENT_SECRET}}
+      YANDEXDISK_CLIENT_ID: ${{secrets. YANDEXDISK_CLIENT_ID}}
+      YANDEXDISK_CLIENT_SECRET:  ${{secrets.YANDEXDISK_CLIENT_SECRET}}
       KOOFR_CLIENT_ID: ${{secrets.KOOFR_CLIENT_ID}}
       KOOFR_CLIENT_SECRET: ${{secrets.KOOFR_CLIENT_SECRET}}
 
     strategy:
-      matrix:
+      matrix: 
         node-version: [20.x]
 
     steps:
@@ -40,10 +38,14 @@ jobs:
         with:
           submodules: recursive
 
+      # 生成 Git LFS 文件的缓存键
+      - name: Checkout LFS file list
+        run: git lfs ls-files --long | cut -d ' ' -f1 | sort > .lfs-assets-id
+
       - name: LFS Cache
         uses: actions/cache@v4
         with:
-          path: .git/lfs/objects
+          path: . git/lfs/objects
           key: ${{ runner.os }}-lfs-${{ hashFiles('.lfs-assets-id') }}
           restore-keys: |
             ${{ runner.os }}-lfs-
@@ -54,12 +56,12 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ matrix. node-version }}
 
       - name: Setup NPM Cache
         uses: actions/cache@v4
         with:
-          path: ~/.npm
+          path: ~/. npm
           key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ matrix.node-version }}-
@@ -67,9 +69,10 @@ jobs:
       - name: Install Dependencies
         run: |
           npm install
-          npm install --save-dev node-polyfill-webpack-plugin crypto-browserify path-browserify process stream-browserify
+          npm install node-diff3
+          npm install --save-dev node-polyfill-webpack-plugin crypto-browserify path-browserify process stream-browserify string-replace-loader
 
-      - name: Run Tests
+      - name:  Run Tests
         run: npm test
 
       - name: Build Project
@@ -82,7 +85,7 @@ jobs:
             main.js
             manifest.json
             styles.css
-          token: ${{ secrets.GITHUB_TOKEN }}
-          draft: false
+          token: ${{ secrets. GITHUB_TOKEN }}
+          draft:  false
           prerelease: false
           make_latest: true
