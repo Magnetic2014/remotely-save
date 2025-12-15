@@ -13,24 +13,20 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "lib": [
-      "dom",
-      "es2020",
-      "es2015", 
-      "scripthost",
-      "webworker"
-    ],
+    "lib": ["dom", "es2020", "es2015", "scripthost", "webworker"],
     "skipLibCheck": true,
     "strictNullChecks": true,
     "downlevelIteration": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "include": [
-    "src/global.d.ts", 
+    "src/global.d.ts",
+    "src/types/**/*.d.ts",
     "**/*.ts"
   ],
   "exclude": [
-    "node_modules", 
+    "node_modules",
     "dist"
   ]
 }
